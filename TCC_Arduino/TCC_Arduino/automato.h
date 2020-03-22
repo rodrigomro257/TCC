@@ -8,12 +8,14 @@
 #define INSERE_PALAVRA 0x02
 #define VALIDA_PALAVRA 0x03
 
-#define DEBOUNCE 150
-#define TEMPO_EXIBICAO 200
+#define DEBOUNCE 300
+#define TEMPO_EXIBICAO 400
 
 int ESTADO=MONTA_AUTOMATO;
+bool flag_nok=false;
+bool flag_aviso_sonoro=false;
 
-void zera_matriz_e_finais();
+void zera_matriz_finais_palavra();
 void maquina_estados();
 bool tem_transicao=false;
 bool tem_estado_final=false;

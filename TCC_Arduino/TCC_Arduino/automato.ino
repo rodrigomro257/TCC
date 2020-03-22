@@ -1,13 +1,16 @@
 #include "automato.h"
 
-void zera_matriz_e_finais(){
+void zera_matriz_finais_palavra(){
   for(int i=0; i<MAX_TRANSICOES; i++){      
-    for(int j=0; j<4; j++){
+    for(int j=0; j<3; j++){
       matriz[i][j]=' ';
     }
   }
   for(int i=0; i<MAX_ESTADOS; i++){
     estados_finais[i]=' ';
+  }
+  for(int i=0; i<MAX_PALAVRA; i++){
+    palavra[i]=' ';
   }
 }
 
@@ -28,48 +31,56 @@ bool valida_token(char token){
       return true;
     }
   }
-  // ASCENDE LED VERMELHO E ACUSA ERRO.
-  digitalWrite(led_nok, HIGH);
+  flag_nok=true;// ACUSA ERRO.
   return false;
 }
 
-void desliga_leds(){
-  digitalWrite(led_0,   LOW);
-  digitalWrite(led_1,   LOW);
-  digitalWrite(led_2,   LOW);
-  digitalWrite(led_3,   LOW);
-  digitalWrite(led_4,   LOW);
-  digitalWrite(led_ok,  LOW);
-  digitalWrite(led_nok, LOW);
-}
-
-bool posicao_atual_eh_final(char estado_atual){
+bool verificar_estado_final(char estado_atual){
   for(int i=0; i<MAX_ESTADOS; i++){
     if (estados_finais[i]==estado_atual) return true;
   }
   return false;
 }
 
-void ascender_led(char transicao){
+void abaixar_motores(){
+  for (pos=0; pos<=90; pos++){
+    motor_0.write(pos);
+    motor_1.write(pos);
+  }
+}
+
+void acusar_erro(){
+  tone(buzzer,1500);   
+  delay(500);
+  noTone(buzzer);
+  delay(500);
+  tone(buzzer,1500);   
+  delay(500);
+  noTone(buzzer);
+  flag_nok=true;
+}
+
+void acusar_sucesso(){
+  tone(buzzer,1500);   
+  delay(500);
+  noTone(buzzer);
+}
+
+void levantar_motor(char transicao){
   for(int i=0; i<=numero_transicao; i++){
     if(matriz[i][0]==estado_atual && matriz[i][1]==transicao){
       estado_atual=matriz[i][2];
       switch(matriz[i][2]){           
         case '0':
-          digitalWrite(led_0, HIGH);
+          for (pos=90; pos>=0; pos--){
+            motor_0.write(pos);
+          }
         break;        
         case '1':
-          digitalWrite(led_1, HIGH);
+          for (pos=90; pos>=0; pos--){
+            motor_1.write(pos);
+          }
         break;
-        case '2':
-          digitalWrite(led_2, HIGH);
-        break; 
-        case '3':
-          digitalWrite(led_3, HIGH);
-        break; 
-        case '4':
-          digitalWrite(led_4, HIGH);
-        break; 
       };
       return;
     }
@@ -92,28 +103,14 @@ void maquina_estados(){
         matriz[numero_transicao][posicao_matriz]='1';
         posicao_matriz++;
       }
-      if(digitalRead(btn_2)==HIGH){
-        delay(DEBOUNCE);
-        matriz[numero_transicao][posicao_matriz]='2';
-        posicao_matriz++;
-      }
-      if(digitalRead(btn_3)==HIGH){
-        delay(DEBOUNCE);
-        matriz[numero_transicao][posicao_matriz]='3';
-        posicao_matriz++;
-      }
-      if(digitalRead(btn_4)==HIGH){
-        delay(DEBOUNCE);
-        matriz[numero_transicao][posicao_matriz]='4';
-        posicao_matriz++;
-      }
+
       if(posicao_matriz==3){
         exibir_lcd_monta_automato();
         delay(TEMPO_EXIBICAO);
         verifica_repeticao();
         posicao_matriz=0;
         numero_transicao++;
-        tem_transicao=true;              
+        tem_transicao=true;
       }
       if(numero_transicao==MAX_TRANSICOES){
         ESTADO=DEFINE_FINAIS;
@@ -142,24 +139,7 @@ void maquina_estados(){
         estados_finais[1]='1';
         tem_estado_final=true;
       }
-      if(digitalRead(btn_2)==HIGH){
-        delay(DEBOUNCE);
-        if(estados_finais[2]==' ') numero_estados_finais++;
-        estados_finais[2]='2';
-        tem_estado_final=true;
-      }
-      if(digitalRead(btn_3)==HIGH){
-        delay(DEBOUNCE);
-        if(estados_finais[3]==' ') numero_estados_finais++;
-        estados_finais[3]='3';
-        tem_estado_final=true;
-      }
-      if(digitalRead(btn_4)==HIGH){
-        delay(DEBOUNCE);
-        if(estados_finais[4]==' ') numero_estados_finais++;
-        estados_finais[4]='4';
-        tem_estado_final=true;
-      }
+
       if(numero_estados_finais==MAX_ESTADOS){
         delay(TEMPO_EXIBICAO);
         ESTADO=INSERE_PALAVRA;
@@ -176,57 +156,28 @@ void maquina_estados(){
     
     case INSERE_PALAVRA:
       exibir_lcd_insere_palavra();
-      if(digitalRead(led_nok)==LOW){
+      if(flag_nok==false){
         if(digitalRead(btn_0)==HIGH){
           delay(DEBOUNCE);
-          desliga_leds();
+          abaixar_motores();
           if(valida_token('0')){
             palavra[tamanho_palavra]='0';
-            ascender_led(palavra[tamanho_palavra]);
+            levantar_motor(palavra[tamanho_palavra]);
             tamanho_palavra++;
           }
-          else digitalWrite(led_nok, HIGH);
+          else acusar_erro();
         }
         if(digitalRead(btn_1)==HIGH){
           delay(DEBOUNCE);
-          desliga_leds();
+          abaixar_motores();
           if(valida_token('1')){
             palavra[tamanho_palavra]='1';                                          
-            ascender_led(palavra[tamanho_palavra]);
+            levantar_motor(palavra[tamanho_palavra]);
             tamanho_palavra++; 
           } 
-          else digitalWrite(led_nok, HIGH);
+          else acusar_erro();
         }
-        if(digitalRead(btn_2)==HIGH){
-          delay(DEBOUNCE);
-          desliga_leds();
-          if(valida_token('2')){
-            palavra[tamanho_palavra]='2';                                          
-            ascender_led(palavra[tamanho_palavra]);
-            tamanho_palavra++; 
-          } 
-          else digitalWrite(led_nok, HIGH);
-        }
-        if(digitalRead(btn_3)==HIGH){
-          delay(DEBOUNCE);
-          desliga_leds();
-          if(valida_token('3')){
-            palavra[tamanho_palavra]='3';                                          
-            ascender_led(palavra[tamanho_palavra]);
-            tamanho_palavra++; 
-          } 
-          else digitalWrite(led_nok, HIGH);
-        }
-        if(digitalRead(btn_4)==HIGH){
-          delay(DEBOUNCE);
-          desliga_leds();
-          if(valida_token('4')){
-            palavra[tamanho_palavra]='4';                                          
-            ascender_led(palavra[tamanho_palavra]);
-            tamanho_palavra++; 
-          } 
-          else digitalWrite(led_nok, HIGH);
-        }     
+
         if(tamanho_palavra==MAX_PALAVRA){
           delay(TEMPO_EXIBICAO);
           ESTADO=VALIDA_PALAVRA;
@@ -235,12 +186,13 @@ void maquina_estados(){
       }
       if(digitalRead(btn_ok)==HIGH){
         delay(DEBOUNCE);
-        if(digitalRead(led_nok)==HIGH){
+        if(flag_nok==true){
           delay(DEBOUNCE);
           lcd.clear();
           for(int i=0; i<MAX_PALAVRA; i++) palavra[i]=' ';
           tamanho_palavra=0;
-          desliga_leds();
+          abaixar_motores;
+          flag_nok=false;
         }
         else{
           ESTADO=VALIDA_PALAVRA;
@@ -251,19 +203,23 @@ void maquina_estados(){
 
     case VALIDA_PALAVRA:
       exibir_lcd_confirma_palavra();
-      if(posicao_atual_eh_final(estado_atual)) digitalWrite(led_ok, HIGH);
-      else digitalWrite(led_nok, HIGH);
+
+      if(flag_aviso_sonoro==false){
+        if(verificar_estado_final(estado_atual)) acusar_sucesso();
+        else acusar_erro();
+        flag_aviso_sonoro=true;
+      }
       if(digitalRead(btn_ok)==HIGH){
         delay(DEBOUNCE);
         ESTADO=INSERE_PALAVRA;
-        desliga_leds();
+        abaixar_motores();
         lcd.clear();
         for(int i=0; i<MAX_PALAVRA; i++) palavra[i]=' ';
         tamanho_palavra=0;
         estado_atual='0';
+        flag_aviso_sonoro=false;
       }
     break;
-
   };
 }
 

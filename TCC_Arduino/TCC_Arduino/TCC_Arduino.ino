@@ -1,22 +1,16 @@
 #include <LiquidCrystal.h> // BIBLIOTECA DO LCD.
+#include <Servo.h>
 #include "automato.h"
 
-#define btn_0 0
-#define btn_1 1
-#define btn_2 2
-#define btn_3 3
-#define btn_4 4
+#define btn_0 2
+#define btn_1 3
+//#define btn_2 0
+//#define btn_3 1
+//#define btn_4 4
 
-#define btn_ok 5
+#define btn_ok 7
 
-#define led_ok 6
-#define led_nok 7
-
-#define led_0 8
-#define led_1 9
-#define led_2 10
-#define led_3 11
-#define led_4 12
+#define buzzer 13
 
 int lcd_14=14;
 int lcd_13=15;
@@ -27,30 +21,34 @@ int lcd_4=19;
 
 LiquidCrystal lcd(lcd_4, lcd_6, lcd_11, lcd_12, lcd_13, lcd_14); // PINOS DO LCD.
 
+Servo motor_0;
+Servo motor_1;
+int pos=0;
+
+bool zerar_variaveis=false;
+
 void setup(){
-  lcd.begin(16, 2); // INICIA O LCD 16x2.
   // DEFINE BOTÕES COMO ENTRADA.
   pinMode(btn_0, INPUT);
   pinMode(btn_1, INPUT);
-  pinMode(btn_2, INPUT);
-  pinMode(btn_3, INPUT);
-  pinMode(btn_4, INPUT);
+  //pinMode(btn_2, INPUT);
+  //pinMode(btn_3, INPUT);
+  //pinMode(btn_4, INPUT);
   pinMode(btn_ok, INPUT);
-  // DEFINE LEDS COMO SAÍDA.
-  pinMode(led_0, OUTPUT);
-  pinMode(led_1, OUTPUT);
-  pinMode(led_2, OUTPUT);
-  pinMode(led_3, OUTPUT);
-  pinMode(led_4, OUTPUT);
-  pinMode(led_ok, OUTPUT);
-  pinMode(led_nok, OUTPUT);
+  // DEFINE MOTORES COMO SAÍDA.
+  motor_0.attach(8);
+  motor_1.attach(9);
+  // DEFINE BUZZER COMO SAÍDA.
+  pinMode(buzzer, OUTPUT);
   // DEFINE AS PORTAS ANALÓGICAS COMO SAÍDAS DIGITAIS PARA O LCD.
+  lcd.begin(16, 2); // INICIA O LCD 16x2.
   pinMode(lcd_4, OUTPUT);
   pinMode(lcd_6, OUTPUT);
   pinMode(lcd_11, OUTPUT);
   pinMode(lcd_12, OUTPUT);
   pinMode(lcd_13, OUTPUT);
   pinMode(lcd_14, OUTPUT);
+  zera_matriz_finais_palavra();
 }
 
 void loop(){

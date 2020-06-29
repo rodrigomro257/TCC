@@ -12,7 +12,6 @@
 #define TEMPO_EXIBICAO 400
 
 int ESTADO=MONTA_AUTOMATO;
-bool flag_nok=false;
 bool flag_aviso_sonoro=false;
 
 void zera_matriz_finais_palavra();

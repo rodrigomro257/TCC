@@ -2,7 +2,7 @@
 
 void exibir_lcd_monta_automato(){
     lcd.setCursor(0,0);
-    lcd.print("MONTAR AUTOMATO");
+    lcd.print("MONTE O AUTOMATO");
     lcd.setCursor(0,1);
     lcd.print((char)matriz[numero_transicao][0]);
     lcd.setCursor(2,1);
@@ -17,7 +17,7 @@ void exibir_lcd_monta_automato(){
 
 void exibir_lcd_define_finais(){
   lcd.setCursor(0,0);
-  lcd.print("DEFINIR FINAIS");
+  lcd.print("DEFINA OS FINAIS");
   lcd.setCursor(0,1);
   lcd.print("Finais ");
   lcd.setCursor(7,1);
@@ -36,7 +36,7 @@ void exibir_lcd_define_finais(){
 
 void exibir_lcd_insere_palavra(){
   lcd.setCursor(0,0); // COLUNA 0, LINHA 0.
-  lcd.print("INSERE PALAVRA"); // IMPRIME TEXTO.
+  lcd.print("INSIRA A PALAVRA"); // IMPRIME TEXTO.
   for(int i=0; i<16; i++){
     lcd.setCursor(i,1);
     lcd.print(palavra[i]);
@@ -45,7 +45,9 @@ void exibir_lcd_insere_palavra(){
 
 void exibir_lcd_confirma_palavra(){
     lcd.setCursor(0,0); // COLUNA 0, LINHA 0.
-    lcd.print("CONFIRMA PALAVRA"); // IMPRIME TEXTO.
+    lcd.print("    PALAVRA     "); // IMPRIME TEXTO.
     lcd.setCursor(0,1); // COLUNA 0, LINHA 1.
+    if(flag_nok==false) lcd.print("    VALIDA      "); // IMPRIME TEXTO.
+    if(flag_nok==true) lcd.print("    INVALIDA    "); // IMPRIME TEXTO.
 }
 

@@ -19,6 +19,7 @@ int posicao_matriz=0;
 int numero_estados_finais=0;
 int tamanho_palavra=0;
 char estado_atual='0'; // O ESTADO INICIAL SERÁ SEMPRE O ZERO.
+bool flag_nok=false;
 
 #endif
 

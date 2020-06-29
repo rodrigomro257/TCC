@@ -192,18 +192,16 @@ void maquina_estados(){
           for(int i=0; i<MAX_PALAVRA; i++) palavra[i]=' ';
           tamanho_palavra=0;
           abaixar_motores;
-          flag_nok=false;
         }
         else{
           ESTADO=VALIDA_PALAVRA;
           lcd.clear();
         }               
       }
+      flag_nok=false;
     break;
 
-    case VALIDA_PALAVRA:
-      exibir_lcd_confirma_palavra();
-
+    case VALIDA_PALAVRA:     
       if(flag_aviso_sonoro==false){
         if(verificar_estado_final(estado_atual)) acusar_sucesso();
         else acusar_erro();
@@ -219,6 +217,7 @@ void maquina_estados(){
         estado_atual='0';
         flag_aviso_sonoro=false;
       }
+      exibir_lcd_confirma_palavra();
     break;
   };
 }

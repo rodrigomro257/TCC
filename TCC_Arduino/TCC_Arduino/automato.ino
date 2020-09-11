@@ -46,6 +46,9 @@ void abaixar_motores(){
   for (pos=0; pos<=90; pos++){
     motor_0.write(pos);
     motor_1.write(pos);
+    motor_2.write(pos);
+    motor_3.write(pos);
+    motor_4.write(pos);
   }
 }
 
@@ -81,29 +84,61 @@ void levantar_motor(char transicao){
             motor_1.write(pos);
           }
         break;
+        case '2':
+          for (pos=90; pos>=0; pos--){
+            motor_2.write(pos);
+          }
+        break;        
+        case '3':
+          for (pos=90; pos>=0; pos--){
+            motor_3.write(pos);
+          }
+        break;
+        case '4':
+          for (pos=90; pos>=0; pos--){
+            motor_4.write(pos);
+          }
+        break;
       };
       return;
     }
   }
 }
 
-void maquina_estados(){
-  
-  switch(ESTADO){
+void montar_automato(char valor){
+  delay(DEBOUNCE);
+  matriz[numero_transicao][posicao_matriz]=valor;
+  posicao_matriz++;
+}
 
+void definir_finais(int btn, char valor){
+  delay(DEBOUNCE);
+  if(estados_finais[btn]==' ') numero_estados_finais++;
+  estados_finais[btn]=valor;
+  tem_estado_final=true;
+}
+
+void inserir_palavra(char valor){
+  delay(DEBOUNCE);
+  abaixar_motores();
+  if(valida_token(valor)){
+    palavra[tamanho_palavra]=valor;                                          
+    levantar_motor(palavra[tamanho_palavra]);
+    tamanho_palavra++; 
+  } 
+  else acusar_erro();
+}
+
+void maquina_estados(){
+  switch(ESTADO){
+    
     case MONTA_AUTOMATO:
       exibir_lcd_monta_automato();
-      if(digitalRead(btn_0)==HIGH){
-        delay(DEBOUNCE);
-        matriz[numero_transicao][posicao_matriz]='0';
-        posicao_matriz++;
-      }
-      if(digitalRead(btn_1)==HIGH){
-        delay(DEBOUNCE);
-        matriz[numero_transicao][posicao_matriz]='1';
-        posicao_matriz++;
-      }
-
+      if(digitalRead(btn_0)==HIGH) montar_automato('0');
+      if(digitalRead(btn_1)==HIGH) montar_automato('1');
+      if(digitalRead(btn_2)==HIGH) montar_automato('2');
+      if(digitalRead(btn_3)==HIGH) montar_automato('3');
+      if(digitalRead(btn_4)==HIGH) montar_automato('4');
       if(posicao_matriz==3){
         exibir_lcd_monta_automato();
         delay(TEMPO_EXIBICAO);
@@ -127,19 +162,11 @@ void maquina_estados(){
   
     case DEFINE_FINAIS:
       exibir_lcd_define_finais();
-      if(digitalRead(btn_0)==HIGH){
-        delay(DEBOUNCE);
-        if(estados_finais[0]==' ') numero_estados_finais++;
-        estados_finais[0]='0';
-        tem_estado_final=true;
-      }
-      if(digitalRead(btn_1)==HIGH){
-        delay(DEBOUNCE);
-        if(estados_finais[1]==' ') numero_estados_finais++;
-        estados_finais[1]='1';
-        tem_estado_final=true;
-      }
-
+      if(digitalRead(btn_0)==HIGH) definir_finais(0, '0');
+      if(digitalRead(btn_1)==HIGH) definir_finais(1, '1');
+      if(digitalRead(btn_2)==HIGH) definir_finais(2, '2');
+      if(digitalRead(btn_3)==HIGH) definir_finais(3, '3');
+      if(digitalRead(btn_4)==HIGH) definir_finais(4, '4');
       if(numero_estados_finais==MAX_ESTADOS){
         delay(TEMPO_EXIBICAO);
         ESTADO=INSERE_PALAVRA;
@@ -157,27 +184,11 @@ void maquina_estados(){
     case INSERE_PALAVRA:
       exibir_lcd_insere_palavra();
       if(flag_nok==false){
-        if(digitalRead(btn_0)==HIGH){
-          delay(DEBOUNCE);
-          abaixar_motores();
-          if(valida_token('0')){
-            palavra[tamanho_palavra]='0';
-            levantar_motor(palavra[tamanho_palavra]);
-            tamanho_palavra++;
-          }
-          else acusar_erro();
-        }
-        if(digitalRead(btn_1)==HIGH){
-          delay(DEBOUNCE);
-          abaixar_motores();
-          if(valida_token('1')){
-            palavra[tamanho_palavra]='1';                                          
-            levantar_motor(palavra[tamanho_palavra]);
-            tamanho_palavra++; 
-          } 
-          else acusar_erro();
-        }
-
+        if(digitalRead(btn_0)==HIGH) inserir_palavra('0');
+        if(digitalRead(btn_1)==HIGH) inserir_palavra('1');
+        if(digitalRead(btn_2)==HIGH) inserir_palavra('2');
+        if(digitalRead(btn_3)==HIGH) inserir_palavra('3');
+        if(digitalRead(btn_4)==HIGH) inserir_palavra('4');
         if(tamanho_palavra==MAX_PALAVRA){
           delay(TEMPO_EXIBICAO);
           ESTADO=VALIDA_PALAVRA;

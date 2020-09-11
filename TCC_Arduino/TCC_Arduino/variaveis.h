@@ -3,8 +3,8 @@
 
 #include "Arduino.h"
 
-#define MAX_ESTADOS    2
-#define MAX_TRANSICOES 4
+#define MAX_ESTADOS    5
+#define MAX_TRANSICOES 25
 #define MAX_PALAVRA    16
 
 /* 

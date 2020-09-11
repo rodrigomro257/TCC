@@ -25,13 +25,11 @@ void exibir_lcd_define_finais(){
   lcd.setCursor(9,1);
   lcd.print(estados_finais[1]);
   lcd.setCursor(11,1);
-  /*
   lcd.print(estados_finais[2]);
   lcd.setCursor(13,1);
   lcd.print(estados_finais[3]);
   lcd.setCursor(15,1);
   lcd.print(estados_finais[4]);
-  */
 }
 
 void exibir_lcd_insere_palavra(){
